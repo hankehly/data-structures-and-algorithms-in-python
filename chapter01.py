@@ -1,3 +1,7 @@
+import math
+import random
+
+
 def R_1_01():
     def is_multiple(n, m):
         return n % m == 0
@@ -83,8 +87,6 @@ def R_1_11():
 
 
 def R_1_12():
-    import random
-
     def choice(data):
         assert data, "data must be a non-empty sequence"
         range_min, range_max = min(data), max(data) + 1
@@ -194,8 +196,6 @@ def C_1_19():
 
 
 def C_1_20():
-    import random
-
     def shuffle_v1(data):
         """
         This was my first thought. This implementation keeps track of selected indices
@@ -384,6 +384,245 @@ def C_1_28():
     assert norm((4, 3), p=3) == (4 ** 3 + 3 ** 3) ** 0.5
 
 
+def P_1_29():
+    s = "catdog"
+
+    def v1():
+        """
+        Stacked for-loops approach
+        """
+        combos = []
+        for a in s:
+            for b in s:
+                if b in [a]:
+                    continue
+                for c in s:
+                    if c in [a, b]:
+                        continue
+                    for d in s:
+                        if d in [a, b, c]:
+                            continue
+                        for e in s:
+                            if e in [a, b, c, d]:
+                                continue
+                            for f in s:
+                                if f in [a, b, c, d, e]:
+                                    continue
+                                combos.append(a + b + c + d + e + f)
+        return set(combos)
+
+    def v2():
+        """
+        Brute force approach using random.shuffle with deduplication step
+        """
+        combos = set()
+        s_iter = list(s)
+        for i in range(10_000):
+            combos.add("".join(s_iter))
+            random.shuffle(s_iter)
+        return set(combos)
+
+    def v3():
+        """
+        To be fair, I found this on the internet, and I still can't understand it
+        completely.
+
+        https://stackoverflow.com/questions/30281913/printing-all-possible-combinations-using-recursion
+        """
+        c = set()
+
+        def words(chars, word=""):
+            if chars:
+                for char in chars:
+                    words(chars - {char}, word + char)
+            else:
+                c.add(word)
+
+        words(set("catdog"))
+        return c
+
+    assert v1() == v2() == v3()
+
+
+def P_1_30():
+    def f(v):
+        """
+        Calculates the number of times one must repeatedly divide v by 2 before getting
+        a value less than 2.
+        """
+        assert v >= 2, "input must be greater than or equal to 2"
+        n = 0
+        while v >= 2:
+            v /= 2
+            n += 1
+        return n
+
+    # You can divide 3 by 2 once before getting a value lower than 2
+    assert f(3) == int(math.log(3, 2)) == 1
+
+    # You can divide 40 by 2 5 times before getting a value lower than 2
+    assert f(40) == int(math.log(40, 2)) == 5
+
+    # etc..
+    assert f(127) == int(math.log(127, 2)) == 6
+
+
+def P_1_31():
+    """
+    Mental notes:
+    You buy something that costs $5.23
+    You gave the clerk a $100 bill
+    Your change is $94.77
+    Can we give change with a $100 bill? No
+    Can we give change with a $50 bill? Yes, 1. Now the amount due is $44.77
+    Can we give change with a $20 bill? Yes, 2. Now the amount due is $4.77
+    Can we give change with a $10 bill? No
+    Can we give change with a $5 bill? No
+    Can we give change with a $1 bill? Yes, 4. Now the amount due is $0.77
+    Can we give change with a quarter? Yes, 3. Now the amount due is $0.02
+    Can we give change with a dime? No
+    Can we give change with a nickel? No
+    Can we give change with a penny? Yes, 2. Now the amount due is $0.00
+    Done.
+    """
+
+    def make_change(*, cost, paid, currency):
+        assert cost <= paid
+
+        currency_large_first = sorted(currency.items(), key=lambda x: -x[1])
+
+        change = {}
+        total_due = paid - cost
+
+        for name, amount in currency_large_first:
+            n, rem = divmod(total_due, amount)
+            change[name] = int(n)
+            total_due -= n * amount
+
+        return change
+
+    usd = {
+        "penny": 0.01,
+        "nickel": 0.05,
+        "dime": 0.1,
+        "quarter": 0.25,
+        "one_dollar": 1.0,
+        "five_dollar": 5.0,
+        "ten_dollar": 10.0,
+        "twenty_dollar": 20.0,
+        "fifty_dollar": 50.0,
+        "hundred_dollar": 100.0,
+    }
+
+    # yen = {
+    #     "one_yen": 1,
+    #     "five_yen": 5,
+    #     "ten_yen": 10,
+    #     "fifty_yen": 50,
+    #     "one_hundred_yen": 100,
+    #     "five_hundred_yen": 500,
+    #     "one_thousand_yen": 1000,
+    #     "five_thousand_yen": 5000,
+    #     "ten_thousand_yen": 10_000,
+    # }
+
+    exp_usd = {
+        "hundred_dollar": 0,
+        "fifty_dollar": 1,
+        "twenty_dollar": 2,
+        "ten_dollar": 0,
+        "five_dollar": 0,
+        "one_dollar": 4,
+        "quarter": 3,
+        "dime": 0,
+        "nickel": 0,
+        "penny": 1,
+    }
+
+    act_usd = make_change(cost=5.23, paid=100.0, currency=usd)
+    assert exp_usd == act_usd
+
+
+def P_1_32():
+    print("P-1.32 is not implemented")
+
+
+def P_1_33():
+    print("P-1.33 is not implemented")
+
+
+def P_1_34():
+    def run(sentence, *, n_typos=8, n_lines=100):
+        n = len(sentence)
+        row_iter = range(1, n_lines + 1)
+        lines = []
+        typo_ix = random.sample(row_iter, n_typos)
+        alpha_chars = list(map(chr, range(ord("a"), ord("z") + 1)))
+        n_alpha_chars = len(alpha_chars)
+
+        for i in row_iter:
+            ln = f"({i:03d}) "
+            if i in typo_ix:
+                typo_char_ix = random.randint(0, n - 1)
+                replace_char_ix = random.randint(0, n_alpha_chars - 1)
+                s_temp = list(sentence)
+                s_temp[typo_char_ix] = alpha_chars[replace_char_ix]
+                string = "".join([ln] + s_temp)
+            else:
+                string = "".join([ln] + list(sentence))
+            lines.append(string)
+        return lines
+
+    # for l in run("I will never spam my friends again.", n_typos=40):
+    #     print(l)
+
+
+def P_1_35():
+    def f(n):
+        # not counting leap years!
+        days_per_month = {
+            1: 31,
+            2: 28,
+            3: 31,
+            4: 30,
+            5: 31,
+            6: 30,
+            7: 31,
+            8: 31,
+            9: 30,
+            10: 31,
+            11: 30,
+            12: 31,
+        }
+        freq = {}
+        for i in range(n):
+            month = random.randint(1, 12)
+            day = random.randint(1, days_per_month[month])
+            date = str(month).zfill(2) + "-" + str(day).zfill(2)
+            if date in freq:
+                freq[date] += 1
+            else:
+                freq[date] = 1
+
+        n_same_birthdays = 0
+        for key, val in freq.items():
+            if val > 1:
+                n_same_birthdays += 1
+        # if n > 23:
+        #     pass
+        return n_same_birthdays
+
+    # for n in range(5, 101, 5):
+    #     res = f(n)
+        # print(n, res)
+
+    print("P-1.35 is not implemented")
+
+
+def P_1_36():
+    print("P-1.36 is not implemented")
+
+
 if __name__ == "__main__":
     R_1_01()
     R_1_02()
@@ -413,3 +652,11 @@ if __name__ == "__main__":
     C_1_26()
     C_1_27()
     C_1_28()
+    P_1_29()
+    P_1_30()
+    P_1_31()
+    P_1_32()
+    P_1_33()
+    P_1_34()
+    P_1_35()
+    P_1_36()
