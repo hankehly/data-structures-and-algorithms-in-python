@@ -578,45 +578,34 @@ def P_1_34():
 
 
 def P_1_35():
+    """
+    Used this description of birthday paradox to complete this project
+    https://betterexplained.com/articles/understanding-the-birthday-paradox/
+    """
+
     def f(n):
-        # not counting leap years!
-        days_per_month = {
-            1: 31,
-            2: 28,
-            3: 31,
-            4: 30,
-            5: 31,
-            6: 30,
-            7: 31,
-            8: 31,
-            9: 30,
-            10: 31,
-            11: 30,
-            12: 31,
-        }
-        freq = {}
+        # each index represents 1 date of the year
+        freq = [0 for _ in range(365)]
         for i in range(n):
-            month = random.randint(1, 12)
-            day = random.randint(1, days_per_month[month])
-            date = str(month).zfill(2) + "-" + str(day).zfill(2)
-            if date in freq:
-                freq[date] += 1
-            else:
-                freq[date] = 1
+            rand_i = random.randint(0, 364)
+            freq[rand_i] += 1
+        a = []
+        for i in range(365):
+            if freq[i] > 1:
+                a.append(i)
+        return len(a) > 0
 
-        n_same_birthdays = 0
-        for key, val in freq.items():
-            if val > 1:
-                n_same_birthdays += 1
-        # if n > 23:
-        #     pass
-        return n_same_birthdays
+    results = {}
+    n_tries = 500
+    for n in range(5, 101, 5):
+        n_true = sum([f(n) for _ in range(n_tries)])
+        results[n] = n_true / n_tries
 
-    # for n in range(5, 101, 5):
-    #     res = f(n)
-        # print(n, res)
+    # uncomment this to see test results
+    # for n_people, prob in results.items():
+    #     print(n_people, prob)
 
-    print("P-1.35 is not implemented")
+    assert results[25] >= 0.5
 
 
 def P_1_36():
