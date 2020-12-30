@@ -1,5 +1,6 @@
 import math
 import random
+from textwrap import dedent
 
 
 def R_1_01():
@@ -334,7 +335,7 @@ def C_1_26():
 
 
 def C_1_27():
-    def factors_v1(n):
+    def v1(n):
         """
         This was my first thought – buffer the larger values and replay them later.
         """
@@ -350,10 +351,10 @@ def C_1_27():
         for val in buf:
             yield val
 
-    def factors_v2(n):
+    def v2(n):
         """
-        This was another solution suggesting in the exercise hints. We start from the
-        square root and check if n is divisible by i.
+        This was another solution suggested in the exercise hints. We reverse the loop
+        and count backwards after k reaches the square root.
         """
         k = 1
         while k * k < n:
@@ -365,12 +366,10 @@ def C_1_27():
             if n % i == 0:
                 yield n // i
 
-    n_ = 1000
+    num = 100
+    exp = [1, 2, 4, 5, 10, 20, 25, 50, 100]
 
-    v1 = [x for x in factors_v1(n_)]
-    v2 = [x for x in factors_v2(n_)]
-
-    assert v1 == v2
+    assert list(v1(num)) == list(v2(num)) == exp
 
 
 def C_1_28():
@@ -544,11 +543,62 @@ def P_1_31():
 
 
 def P_1_32():
-    print("P-1.32 is not implemented")
+    """
+    I don't understand these requirements, and it seems like they overlap with P-1.33
+    so I'll skip this project.
+    """
+    pass
 
 
 def P_1_33():
-    print("P-1.33 is not implemented")
+    def run():
+        intro = """
+        Welcome to the calculator. Type 'c' to reset, and ctrl-D or 'exit' to exit.
+        
+        This program is meant to simulate pressing buttons on a calculator, so please 
+        press enter after each number or operation like you would on a regular 
+        calculator.
+        
+        Valid operators are + - * and /. To evaluate an expression, enter '='.
+        """
+        print(dedent(intro))
+
+        ops = ["+", "-", "*", "/"]
+        exp = []
+
+        while True:
+            try:
+                s = input("> ").strip()
+                if s == "exit":
+                    break
+                if s == "c":
+                    exp = []
+                elif s in ops:
+                    exp.append(s)
+                elif s == "=":
+                    # remove last item if it's an operator
+                    if exp and exp[-1] in ops:
+                        exp.pop()
+                    exp_s = " ".join(map(str, exp))
+                    print(exp_s)
+                    res = eval(exp_s)
+                    print(res)
+                    exp = []
+                elif s == "":
+                    continue
+                else:
+                    try:
+                        s_n = float(s)
+                        if s_n.is_integer():
+                            s_n = int(s_n)
+                        exp.append(s_n)
+                        print(s_n)
+                    except ValueError:
+                        print(f"'{s}' must be a number or on of {ops}")
+            except EOFError:
+                break
+
+    # run()
 
 
 def P_1_34():
