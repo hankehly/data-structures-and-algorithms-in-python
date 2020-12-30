@@ -601,7 +601,7 @@ def P_1_35():
         n_true = sum([f(n) for _ in range(n_tries)])
         results[n] = n_true / n_tries
 
-    # uncomment this to see test results
+    # uncomment next 2 lines to see results
     # for n_people, prob in results.items():
     #     print(n_people, prob)
 
@@ -624,7 +624,8 @@ def P_1_36():
         "it forever just because this it the song that never ends"
     )
 
-    f(*sentence.split(" "))
+    # uncomment next line to see result
+    # f(*sentence.split(" "))
 
 
 if __name__ == "__main__":
