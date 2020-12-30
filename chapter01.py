@@ -609,7 +609,22 @@ def P_1_35():
 
 
 def P_1_36():
-    print("P-1.36 is not implemented")
+    def f(*words):
+        buf = {}
+        for word in words:
+            if word not in buf:
+                buf[word] = 0
+            buf[word] += 1
+        for word, n in buf.items():
+            print(f"The word '{word}' appeared {n} time(s)")
+
+    sentence = (
+        "this is the song that never ends yes it goes on and on my friends some "
+        "people started singing it not knowing what it was and will continue singing "
+        "it forever just because this it the song that never ends"
+    )
+
+    f(*sentence.split(" "))
 
 
 if __name__ == "__main__":
